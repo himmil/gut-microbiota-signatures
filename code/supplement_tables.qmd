@@ -1,0 +1,113 @@
+---
+title: "Supplement"
+format: html
+execute:
+  echo: false
+---
+
+```{r}
+#| output: false
+library(dplyr)
+library(gt)
+```
+
+```{r}
+kendall <- read.csv("./tables/kendall.csv")
+kendall <- kendall[, c("var1", "var2", "cor", "statistic", "p", "sig_label")]
+colnames(kendall) <- c("var1", "var2", "cor", "statistic", "p_val", "significant")
+kendall$method <- NULL
+
+kendall %>% gt() %>% fmt_scientific(
+    columns = c(p_val),
+    n_sigfig = 2) %>% fmt_number(
+    columns = c(cor, statistic),
+    n_sigfig = 2) %>%
+  tab_header(
+    title = "Table 1",
+    subtitle = "Kendall's tau correlation") %>%
+  tab_options(
+    table.font.size           = "9px",
+    heading.title.font.size   = "12px",
+    heading.subtitle.font.size   = "11px",
+    column_labels.font.size   = "11px"
+  )
+```
+
+```{r}
+cont <- read.csv("./tables/survival.csv")
+cont <- cont[, c("endpoint", "k", "ncomps", "name", "coeff", "HR", "lower95", "upper95", "p_val", "q_val")]
+cont$name <- gsub("_", " ", cont$name)
+cont$significant <- case_when(cont$q_val < 0.05 & cont$q_val > 0.01 ~ "*",
+                              cont$q_val < 0.01 & cont$q_val > 0.001 ~ "**",
+                              cont$q_val < 0.001 ~ "***",
+                              cont$q_val > 0.05 ~ "")
+
+cont %>% gt() %>% fmt_scientific(
+    columns = c(p_val, q_val, coeff),
+    n_sigfig = 2) %>% fmt_number(
+    columns = c(HR, lower95, upper95),
+    n_sigfig = 4) %>%
+  tab_header(
+    title = "Table 2",
+    subtitle = "Cox proportional hazards regression, continuous")%>%
+  tab_options(
+    table.font.size           = "9px",
+    heading.title.font.size   = "12px",
+    heading.subtitle.font.size   = "11px",
+    column_labels.font.size   = "11px"
+  )
+```
+
+```{r}
+df <- read.csv("./tables/survival_categ_k5.csv")
+colnames(df) <- c("principal_ES", "coeff", "exp_coeff", "se", "z", "p_val", "q_val", "lower95", "upper95")
+df <- df[,c("principal_ES", "exp_coeff", "se","lower95", "upper95", "z", "p_val", "q_val")]
+df$principal_ES <- gsub("topic", "", df$principal_ES)
+
+df$significant <- case_when(df$q_val < 0.05 & df$q_val > 0.01 ~ "*",
+                              df$q_val < 0.01 & df$q_val > 0.001 ~ "**",
+                              df$q_val < 0.001 ~ "***",
+                              df$q_val > 0.05 ~ "")
+
+df %>% gt() %>% fmt_scientific(
+    columns = c(p_val, q_val, se),
+    n_sigfig = 2) %>% fmt_number(
+    columns = c(exp_coeff, z, lower95, upper95),
+    n_sigfig = 4) %>%
+  tab_header(
+    title = "Table 3",
+    subtitle = "Cox proportional hazards regression, categorical, k=5") %>%
+  tab_options(
+    table.font.size           = "9px",
+    heading.title.font.size   = "12px",
+    heading.subtitle.font.size   = "11px",
+    column_labels.font.size   = "11px"
+  )
+```
+
+```{r}
+df <- read.csv("./tables/survival_categ_k20.csv")
+colnames(df) <- c("principal_ES", "coeff", "exp_coeff", "se", "z", "p_val", "q_val", "lower95", "upper95")
+df <- df[,c("principal_ES", "exp_coeff", "se","lower95", "upper95", "z", "p_val", "q_val")]
+df$principal_ES <- gsub("topic", "", df$principal_ES)
+
+df$significant <- case_when(df$q_val < 0.05 & df$q_val > 0.01 ~ "*",
+                              df$q_val < 0.01 & df$q_val > 0.001 ~ "**",
+                              df$q_val < 0.001 ~ "***",
+                              df$q_val > 0.05 ~ "")
+
+df %>% gt() %>% fmt_scientific(
+    columns = c(p_val, q_val, se),
+    n_sigfig = 2) %>% fmt_number(
+    columns = c(exp_coeff, z, lower95, upper95),
+    n_sigfig = 4) %>%
+  tab_header(
+    title = "Table 4",
+    subtitle = "Cox proportional hazards regression, categorical, k=20") %>%
+  tab_options(
+    table.font.size           = "9px",
+    heading.title.font.size   = "12px",
+    heading.subtitle.font.size   = "11px",
+    column_labels.font.size   = "11px"
+  )
+```
